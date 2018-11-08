@@ -43,6 +43,7 @@ Once logged-in in the server, the hacker will find the private key of the server
 SERVER has asymmetric RSA key pair (Ks, Ks.pub)
 CLIENT has asymmetric RSA key pair (Kc, Kc.pub)
 
+pcap contents:
     1) SERVER -> CLIENT : hello, please provide your RSA public key
     2) CLIENT -> SERVER : Kc.pub
     3) SERVER -> CLIENT : { username: }Kc.pub
