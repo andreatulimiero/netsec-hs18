@@ -75,7 +75,7 @@ pcap contents:
 
 #### 4. connect and authenticate to the server
 - the password cannot be bruteforced, you have to come up a way to authenticate without having to guess the password
-- use a *replay attack* to authenticate by first establishing a connection and then repeating message `2`, `4` and `6` when prompted for the credentials
+- use a *replay attack* to authenticate by first establishing a connection and then repeating messages `2`, `4` and `6` when prompted for the credentials
 
 
 #### 5. get the password of the client
