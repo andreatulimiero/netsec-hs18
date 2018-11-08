@@ -29,6 +29,8 @@ Once in the server, the hacker will find the private key of the server (another 
 - `.pem` file containing the private key of the client
 - `X.509` file, containing the certificate of the server to which the client connected during the conversation, and to which the hacker has to connect to solve the challenge.
 
+
+
 #### 1. understand the content of the `.pcap` file
 
 - there are several TCP messages exchanged between the client and the server
@@ -51,13 +53,14 @@ CLIENT has asymmetric RSA key pair (Kc, Kc.pub)
 ```
 -->
 
-> $\texttt{1) SERVER}\rightarrow\texttt{CLIENT}: \texttt{ "Hello, please provide your RSA public key" }$
-> $\texttt{2) CLIENT}\rightarrow\texttt{SERVER}: \texttt{ Kc.pub}$
-> $\texttt{3) SERVER}\rightarrow\texttt{CLIENT}: \texttt{\{ "username:" \}}_\texttt{Kc.pub}$
-> $\texttt{4) CLIENT}\rightarrow\texttt{SERVER}: \texttt{\{ <username> \}}_\texttt{Ks.pub}$
-> $\texttt{5) SERVER}\rightarrow\texttt{CLIENT}: \texttt{\{ "password:" \}}_\texttt{Kc.pub}$
-> $\texttt{6) CLIENT}\rightarrow\texttt{SERVER}: \texttt{\{ <password> \}}_\texttt{Ks.pub}$
-> $\texttt{7) SERVER}\rightarrow\texttt{CLIENT}: \texttt{\{ Welcome ... \}}_\texttt{Kc.pub}$
+
+> 1) SERVER &rarr; CLIENT : hello, please provide your RSA public key  
+> 2) CLIENT &rarr; SERVER : Kc.pub  
+> 3) SERVER &rarr; CLIENT : { username: }<sub>Kc.pub</sub>  
+> 4) CLIENT &rarr; SERVER : { &lt;username&gt; }<sub>Ks.pub</sub>  
+> 5) SERVER &rarr; CLIENT : { password: }<sub>Kc.pub</sub>  
+> 6) CLIENT &rarr; SERVER : { &lt;password&gt; }<sub>Ks.pub</sub>  
+> 7) SERVER &rarr; CLIENT : { welcome.. }<sub>Kc.pub</sub>  
 
 #### 2. find out who is the owner of the provided private key (`.pem` file):
 - use `openssl` to compute the corresponding public key
@@ -77,14 +80,14 @@ CLIENT has asymmetric RSA key pair (Kc, Kc.pub)
 #### 5. get the password of the client
 - you now have a remote shell that you can use to send commands to the server (encrypting them with the public key of the server `Ks.pub`)
 - find the `.pem` file on the home directory of the server containing the private key of the server `Ks`
-- use `Ks` to decrypt the client messages (`4`, `5`) of the authentication in the `.pcap` file.
-- the flag of the client is in the message `6`, and corresponds to the password.
+- use `Ks` to decrypt the client messages (`4`, `6`) in the `.pcap` file, containing the credentials
+- the password (message `6`) is the flag
 
 ## Wargame information
 
-You were able to capture the communication between a client and *[server IP]* : *[link to pcap file]*.
+You were able to capture the communication between a client and a server at *[server IP]* : *[link to pcap file]*.
 
-To avoid any kind of malicious sniffing, the server requires all messages sent to it to be encrypted with its public key: *[server certificate]*.
+To prevent eavesdropper from reading the messages, the server requires all messages sent to be encrypted with its public key: *[server certificate]*.
 
 The messages are encrypted; however, one anonymous friend tells you that he managed to snatch a private key, although, he's not sure whether or not the key was used to ecnrypt the conversation.
 
