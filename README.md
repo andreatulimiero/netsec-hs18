@@ -4,12 +4,13 @@ Group ID:
 >Team 2
 
 Member names:
->Lorenz Merz
->Andrea Tulimiero
->Luca Di Bartolomeo
+>Lorenzo Selvatici  
+>Andrea Tulimiero  
+>Luca Di Bartolomeo  
 
-## Challenge title
-### ***Say that again***
+
+## Challenge title: ***Say that again***
+![](https://bit.ly/2Pi274U)
 
 ## Abstract
 The hacker is given an encrypted conversation between a client and a server (a `.pcap` file), a private key (a `.pem` file), and the certificate of the server (an `X.509` file). 
@@ -19,7 +20,7 @@ In order to do so, they have to leverage the messages included in the conversati
 
 The **vulnerability** lies in the fact that the server is missing a control on the uniqueness of a message (e.g.: using a timestamp).
 
-Once in the server, the hacker will find the private key of the server (another `.pem` file), and thus be able to decrypt the rest of the message in which there's the flag.
+Once logged-in in the server, the hacker will find the private key of the server (another `.pem` file), and thus be able to decrypt the rest of the messages. One of them is the client password.
 
 ## Step-by-step instructions
 
@@ -85,10 +86,10 @@ CLIENT has asymmetric RSA key pair (Kc, Kc.pub)
 
 ## Wargame information
 
-You were able to capture the communication between a client and a server at *[server IP]* : *[link to pcap file]*.
+You were able to capture the communication between a client and a server at *[server IP]* : *[pcap file]*.
 
-To prevent eavesdropper from reading the messages, the server requires all messages sent to be encrypted with its public key: *[server certificate]*.
+To prevent eavesdroppers from reading the messages, the server requires all messages sent to be encrypted with its public key: *[server certificate]*.
 
-The messages are encrypted; however, one anonymous friend tells you that he managed to snatch a private key, although, he's not sure whether or not the key was used to ecnrypt the conversation.
+An anonymous third-party told you that he managed to snitch a private key. Although, he's not sure who is the owner of this key and whether or not it was used to encrypt the conversation at all.
 
-Your goal is to find the password that the client used to authenticate to the server.
+Your goal is to find out the password that the client used to authenticate to the server.
