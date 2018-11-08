@@ -39,7 +39,6 @@ Once logged-in in the server, the hacker will find the private key of the server
 - the rest of the messages sent by the server will have the payload encrypted with the provided public key
 - the messages sent by they client are encrypted using the server public key `Ks.pub`, which can be retrieved by the provided certificate
 
-<!--
 ```
 SERVER has asymmetric RSA key pair (Ks, Ks.pub)
 CLIENT has asymmetric RSA key pair (Kc, Kc.pub)
@@ -52,9 +51,8 @@ CLIENT has asymmetric RSA key pair (Kc, Kc.pub)
     6) CLIENT -> SERVER : { <password> }Ks.pub
     7) SERVER -> CLIENT : { welcome.. }Kc.pub
 ```
--->
 
-
+<!--
 > 1) SERVER &rarr; CLIENT : hello, please provide your RSA public key  
 > 2) CLIENT &rarr; SERVER : Kc.pub  
 > 3) SERVER &rarr; CLIENT : { username: }<sub>Kc.pub</sub>  
@@ -62,6 +60,7 @@ CLIENT has asymmetric RSA key pair (Kc, Kc.pub)
 > 5) SERVER &rarr; CLIENT : { password: }<sub>Kc.pub</sub>  
 > 6) CLIENT &rarr; SERVER : { &lt;password&gt; }<sub>Ks.pub</sub>  
 > 7) SERVER &rarr; CLIENT : { welcome.. }<sub>Kc.pub</sub>  
+-->
 
 #### 2. find out who is the owner of the provided private key (`.pem` file):
 - use `openssl` to compute the corresponding public key
