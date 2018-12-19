@@ -1,0 +1,35 @@
+{% extends "passes/base.html" %}
+{% block title %} Your passes {% endblock %}
+
+{% block main %}
+<main role="main" class="inner cover">
+<h2>Your passes</h2>
+{% for p in passes %}
+<p>
+<span><b>{{ p.key }}</b></span>
+<span><em>**********</em></span>
+<a href="/passes/{{ p.key }}">
+	<i class="material-icons">remove_red_eye</i>
+</a>
+</p>
+{% endfor %}
+<form method="post">
+	{% for field in form %}
+	<p>
+	{{ field.label_tag }}<br>
+	{{ field }}
+	{% if field.help_text %}
+	<small>{{ field.help_text }}</small>
+	{% endif %}
+	{% for error in field.errors %}
+	<p style="color: red">{{ error }}</p>
+	{% endfor %}
+	</p>
+	{% endfor %}
+	<button type="submit">Add</button>
+</form>
+</main>
+<footer class="mastfoot mt-auto">
+</footer>
+</div>
+{% endblock %}

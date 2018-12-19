@@ -1,0 +1,36 @@
+{% extends "passes/base.html" %}
+{% block title %}Reveal pass{% endblock %}
+
+{% block main %}
+<main role="main" class="inner cover">
+
+<h2>
+	<a href="/passes"><i class="material-icons">arrow_back</i></a>
+	Reveal pass
+</h2>
+{% if pass is not None %}
+<p>
+<span><b>{{ pass.key }}</b></span>
+<span><em>{{ pass.pwd }}</em></span>
+</p>
+{% endif %}
+<form method="post">
+	{% for field in form %}
+	<p>
+	{{ field.label_tag }}<br>
+	{{ field }}
+	{% if field.help_text %}
+	<small>{{ field.help_text }}</small>
+	{% endif %}
+	{% for error in field.errors %}
+	<p style="color: red">{{ error }}</p>
+	{% endfor %}
+	</p>
+	{% endfor %}
+	<button type="submit">Login</button>
+</form>
+</main>
+<footer class="mastfoot mt-auto">
+</footer>
+</div>
+{% endblock %}
