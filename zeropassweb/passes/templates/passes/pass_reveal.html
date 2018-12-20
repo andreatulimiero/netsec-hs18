@@ -10,25 +10,13 @@
 </h2>
 {% if pass is not None %}
 <p>
-<span><b>{{ pass.key }}</b></span>
-<span><em>{{ pass.pwd }}</em></span>
+Congratulations! The pass is, <b>{{ pass }}</b>
+</p>
+{% else %}
+<p>
+Something weent wrong ... Maybe you don't have enough funds to buy the pass <em>yet</em>
 </p>
 {% endif %}
-<form method="post">
-	{% for field in form %}
-	<p>
-	{{ field.label_tag }}<br>
-	{{ field }}
-	{% if field.help_text %}
-	<small>{{ field.help_text }}</small>
-	{% endif %}
-	{% for error in field.errors %}
-	<p style="color: red">{{ error }}</p>
-	{% endfor %}
-	</p>
-	{% endfor %}
-	<button type="submit">Login</button>
-</form>
 </main>
 <footer class="mastfoot mt-auto">
 </footer>

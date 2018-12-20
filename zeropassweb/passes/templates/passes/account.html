@@ -1,0 +1,35 @@
+{% extends "passes/base.html" %}
+{% block title %} Your account {% endblock %}
+
+{% block main %}
+<main role="main"> 
+<h2>Hello, {{ request.user }}</h2>
+<h4>Your balance is: <em>{{ balance }}.- CHF</em></h4>
+<form method="post">
+	{% for field in form %}
+	<p>
+	{{ field.label_tag }}<br>
+	{{ field }}
+	{% if field.help_text %}
+	<small>{{ field.help_text }}</small>
+	{% endif %}
+	{% for error in field.errors %}
+	<p style="color: red">{{ error }}</p>
+	{% endfor %}
+	</p>
+	{% endfor %}
+	<button type="submit" class="btn btn-md btn=secondary">Transfer</button>
+</form>
+<hr/>
+<div class="row">
+		<div class="col-12">
+			<h3> Special Offer! Buy the pass for only 10.- CHF </h3>
+			<a href='account/buy-pass/' class="btn btn-sm btn-primary">Buy the PASS!</a>
+		</div>
+</div>
+</main>
+<footer class="mastfoot mt-auto">
+</footer>
+</div>
+{% endblock %}
+

@@ -4,8 +4,10 @@ from django.views import View
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate, logout
 
-from .forms import UsernamePasswordForm, PassForm, PassRevealForm
-from .models import Pass
+from .forms import *
+from .models import *
+
+PASS_COST = 10
 
 # Create your views here.
 class Index(View):
@@ -27,7 +29,8 @@ class Signup(View):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(req, user)
-            return redirect('passes')
+            account = Account.objects.create(user=user, balance=10)
+            return redirect('account')
         else:
             return render(req, 'passes/signup.html', {'form': form})
 
@@ -45,7 +48,7 @@ class Login(View):
             user = authenticate(req, username=username, password=password)
             if user is not None:
                 login(req, user)
-                return redirect('passes')
+                return redirect('account')
         return render(req, 'passes/login.html', {'form': form})
 
 class Logout(View):
@@ -54,56 +57,59 @@ class Logout(View):
         logout(req)
         return redirect('index')
 
-class PassCRUD(View):
+class AccountView(View):
 
     def get(self, req):
         if not req.user.is_authenticated:
             return redirect('index')
 
-        form = PassForm()
-        passes = Pass.objects.filter(user=req.user).all()
-        return render(req, 'passes/passes.html', {'passes': passes, 'form': form})
+        form = TransactionForm()
+        balance = req.user.account.balance
+        return render(req, 'passes/account.html', {'form': form, 'balance': balance})
 
     def post(self, req):
         if not req.user.is_authenticated:
             return redirect('index')
 
-        passes = Pass.objects.filter(user=req.user).all()
-        form = PassForm(req.POST)
+        form = TransactionForm(req.POST)
         if form.is_valid():
-            key = form.cleaned_data.get('key')
-            pwd = form.cleaned_data.get('pwd')
-            user = req.user
-            p = Pass.objects.create(user=user, key=key, pwd=pwd)
-            p.save()
-            return redirect('passes') 
-        return render(req, 'passes/passes.html', {'passes': passes, 'form': form})
+            from_user = form.cleaned_data.get('from_user')
+            from_user_pwd = form.cleaned_data.get('from_user_pwd')
+            to_user = form.cleaned_data.get('to_user')
+            amount = form.cleaned_data.get('amount')
+            try:
+                amount = int(amount)
+                if amount < 0:
+                    return HttpResponse('Te piacerebbe...', status=400)
+            except Exception as e:
+                return HttpResponse('Wrong amount',status=400)
+            sender = authenticate(req, username=from_user, password=from_user_pwd)
+            if sender is None:
+                return HttpResponse('Oh no ...', status=401)
+            receiver = User.objects.filter(username=to_user).first()
+            if receiver is None:
+                return HttpResponse('No such user', status=400)
 
-class PassReveal(View):
+            account_from = Account.objects.filter(user=sender).first()
+            account_to = Account.objects.filter(user=receiver).first()
+            account_from.balance -= amount
+            account_to.balance += amount
+            account_from.save()
+            account_to.save()
+        return redirect('account') 
 
-    def get(self, req, key):
+class BuyPassView(View):
+
+    def get(self, req):
         if not req.user.is_authenticated:
             return redirect('index')
 
-        form = UsernamePasswordForm()
-        passes = Pass.objects.filter(user=req.user).all()
-        return render(req, 'passes/pass_reveal.html', {'form': form})
+        account = req.user.account
+        success = False 
+        if account.balance > PASS_COST:
+            account.balance -= PASS_COST
+            account.save()
+            success = True
+        return render('passes/pass_reveal.html', {'success': success})
 
-    def post(self, req, key):
-        form = UsernamePasswordForm(req.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(req, username=username, password=password)
-            if user is None:
-                return HttpResponse('te piacerebbe', status=401)
-
-            pss = Pass.objects.filter(user=user, key=key).first()
-            if pss is None:
-                return HttpResponse(status=404) 
-            print(pss)
-
-            return render(req, 'passes/pass_reveal.html', {'pass': pss, 'form': form})
-        return render(req, 'passes/pass_reveal.html', {'form': form})
-        
 
