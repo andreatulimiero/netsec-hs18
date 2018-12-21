@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db import connection
 from django.http import HttpResponse
 from django.views import View
 from django.contrib.auth.forms import UserCreationForm
@@ -8,6 +9,7 @@ from .forms import *
 from .models import *
 
 PASS_COST = 10
+DISALLOWED_SQL = ['select', 'insert', 'delete', 'create', 'update']
 
 # Create your views here.
 class Index(View):
@@ -29,7 +31,7 @@ class Signup(View):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(req, user)
-            account = Account.objects.create(user=user, balance=10)
+            account = Account.objects.create(user=user, balance=10, clear_password=raw_password)
             return redirect('account')
         else:
             return render(req, 'passes/signup.html', {'form': form})
@@ -73,9 +75,9 @@ class AccountView(View):
 
         form = TransactionForm(req.POST)
         if form.is_valid():
-            from_user = form.cleaned_data.get('from_user')
-            from_user_pwd = form.cleaned_data.get('from_user_pwd')
-            to_user = form.cleaned_data.get('to_user')
+            from_user = req.POST.get('from_user')
+            from_user_pwd = req.POST.get('from_user_pwd')
+            to_user_account = form.cleaned_data.get('to_user')
             amount = form.cleaned_data.get('amount')
             try:
                 amount = int(amount)
@@ -83,15 +85,20 @@ class AccountView(View):
                     return HttpResponse('Te piacerebbe...', status=400)
             except Exception as e:
                 return HttpResponse('Wrong amount',status=400)
-            sender = authenticate(req, username=from_user, password=from_user_pwd)
-            if sender is None:
+
+            cursor = connection.cursor()
+            row = cursor.execute("select user_id from passes_account where user_id = (select id from auth_user where username = '{}') and clear_password = '{}'".format(from_user, from_user_pwd))
+            account_id = row.fetchone()
+            print(account_id)
+
+            if account_id is None:
                 return HttpResponse('Oh no ...', status=401)
-            receiver = User.objects.filter(username=to_user).first()
-            if receiver is None:
-                return HttpResponse('No such user', status=400)
+            sender = User.objects.filter(username=from_user).first()
+            account_to = Account.objects.filter(id=int(to_user_account)).first()
+            if account_to is None:
+                return HttpResponse('No such account', status=400)
 
             account_from = Account.objects.filter(user=sender).first()
-            account_to = Account.objects.filter(user=receiver).first()
             account_from.balance -= amount
             account_to.balance += amount
             account_from.save()
@@ -112,4 +119,29 @@ class BuyPassView(View):
             success = True
         return render(req, 'passes/pass_reveal.html', {'success': success})
 
+class GetAccountId(View):
+
+    def get(self, req):
+        if not req.user.is_authenticated:
+            return redirect('index')
+        form = SearchAccountForm()
+        res = ''
+        return render(req, 'passes/get_user_account.html', {'form':form, 'res': res})
+
+    def post(self, req):
+        if not req.user.is_authenticated:
+            return redirect('index')
+
+        form = SearchAccountForm()
+        username = req.POST.get('username')
+        if username.lower() in DISALLOWED_SQL:
+            res = 'You cannot modify the DB'
+        cursor = connection.cursor()
+        accounts = cursor.execute("select id from passes_account where user_id = (select id from auth_user where username = '{}')".format(username))
+        account_id = accounts.fetchone()
+        if account_id is None:
+            res = 'No account found'
+        else:
+            res = account_id
+        return render(req, 'passes/get_user_account.html', {'form': form,'res': res})
 

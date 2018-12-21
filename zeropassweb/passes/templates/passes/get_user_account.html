@@ -3,8 +3,13 @@
 
 {% block main %}
 <main role="main"> 
-<h2>Hello, {{ request.user }}</h2>
-<h4>Your balance is: <em>{{ balance }}.- CHF</em></h4>
+<h2>
+	<a href="/account"><i class="material-icons">arrow_back</i></a>
+	Back
+</h2>
+{% if res is not None %}
+The account id is: {{ res }}
+{% endif %}
 <form method="post">
 	{% for field in form %}
 	<p>
@@ -18,17 +23,8 @@
 	{% endfor %}
 	</p>
 	{% endfor %}
-	<button type="submit" class="btn btn-md btn=secondary">Transfer</button>
+	<button type="submit" class="btn btn-md btn=secondary">Search</button>
 </form>
-<hr/>
-<h4>Don't know the account id? Search by username <a href="/search">here</a></h4>
-<hr/>
-<div class="row">
-		<div class="col-12">
-			<h3> Special Offer! Buy the pass for only 10.- CHF </h3>
-			<a href='/account/buy-pass/' class="btn btn-sm btn-primary">Buy the PASS!</a>
-		</div>
-</div>
 </main>
 <footer class="mastfoot mt-auto">
 </footer>
