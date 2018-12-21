@@ -98,7 +98,10 @@ class AccountView(View):
             if account_to is None:
                 return HttpResponse('No such account', status=400)
 
+
             account_from = Account.objects.filter(user=sender).first()
+            if account_from.id == account_to.id:
+                return HttpResponse('Canno send money to your own account')
             account_from.balance -= amount
             account_to.balance += amount
             account_from.save()
