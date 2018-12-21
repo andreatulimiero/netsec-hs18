@@ -5,18 +5,16 @@
 <main role="main" class="inner cover">
 
 <h2>
-	<a href="/passes"><i class="material-icons">arrow_back</i></a>
-	Reveal pass
+	<a href="/account"><i class="material-icons">arrow_back</i></a>
+	Back
 </h2>
-{% if pass is not None %}
-<p>
-Congratulations! The pass is, <b>{{ pass }}</b>
-</p>
+<h4>
+{% if success is True %}
+Congratulations! The pass is, <b>DysonPalle</b>
 {% else %}
-<p>
-Something weent wrong ... Maybe you don't have enough funds to buy the pass <em>yet</em>
-</p>
+Something went wrong ... Maybe you don't have enough funds to buy the pass <em>yet</em>
 {% endif %}
+</h4>
 </main>
 <footer class="mastfoot mt-auto">
 </footer>

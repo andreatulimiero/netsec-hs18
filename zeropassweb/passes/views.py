@@ -106,10 +106,10 @@ class BuyPassView(View):
 
         account = req.user.account
         success = False 
-        if account.balance > PASS_COST:
+        if account.balance >= PASS_COST:
             account.balance -= PASS_COST
             account.save()
             success = True
-        return render('passes/pass_reveal.html', {'success': success})
+        return render(req, 'passes/pass_reveal.html', {'success': success})
 
 
